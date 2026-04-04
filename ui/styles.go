@@ -19,7 +19,9 @@ var (
 	SystemBadgeStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("240")).Italic(true)
 
 	// SelectedRowStyle highlights the selected table row.
-	SelectedRowStyle = lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("6")) // cyan
+	SelectedRowStyle = lipgloss.NewStyle().
+		Bold(true).
+		Foreground(lipgloss.Color("33"))
 
 	// HeaderStyle is used for column headers.
 	HeaderStyle = lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("15"))

@@ -88,7 +88,11 @@ func renderEntriesPanel(p ListParams, width, height int) string {
 		row := fmt.Sprintf(" %s %-*s %s", stIcon, schedW, sched, cmdDisplay)
 
 		if i == p.Selected {
-			row = SelectedRowStyle.Render(fmt.Sprintf(" %s %-*s %s", stIcon, schedW, truncate(e.Schedule.Value, schedW), truncate(e.Command, cmdW)))
+			icon := "●"
+			if !e.Enabled {
+				icon = "○"
+			}
+			row = SelectedRowStyle.Render(fmt.Sprintf(" %s %-*s %s", icon, schedW, truncate(e.Schedule.Value, schedW), truncate(e.Command, cmdW)))
 		}
 
 		rows = append(rows, row)
