@@ -1,4 +1,4 @@
-# gronma
+# grons
 
 A terminal UI for managing cron jobs. Browse, add, edit, delete, and toggle cron entries from a single interface. Shows run history pulled from `journalctl`.
 
