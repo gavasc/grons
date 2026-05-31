@@ -1,6 +1,6 @@
 version: 2
 
-project_name: gronma
+project_name: grons
 
 before:
   hooks:
@@ -25,9 +25,9 @@ archives:
 # .deb (Ubuntu/Debian) and .rpm (Fedora/RHEL/CentOS)
 nfpms:
   - id: packages
-    package_name: gronma
+    package_name: grons
     vendor: gavasc
-    homepage: https://github.com/gavasc/gronma
+    homepage: https://github.com/gavasc/grons
     maintainer: gavasc
     description: Terminal UI for managing cron jobs.
     license: MIT
@@ -37,8 +37,27 @@ nfpms:
       - apk
     bindir: /usr/bin
 
+source:
+  enabled: true
+  name_template: "{{ .ProjectName }}_{{ .Version }}_source"
+
 checksum:
   name_template: "checksums.txt"
+
+aur_sources:
+  - name: grons
+    homepage: https://github.com/gavasc/grons
+    description: Terminal UI for managing cron jobs.
+    maintainers:
+      - gavasc
+    license: MIT
+    private_key: "{{ .Env.AUR_SSH_KEY }}"
+    git_url: "ssh://aur@aur.archlinux.org/grons.git"
+    build: |-
+      cd "${srcdir}/${pkgname}_${pkgver}"
+      go build -ldflags="-s -w" -o grons .
+    package: |-
+      install -Dm755 "./grons" "${pkgdir}/usr/bin/grons"
 
 changelog:
   sort: asc
