@@ -39,7 +39,7 @@ nfpms:
 
 source:
   enabled: true
-  name_template: "{{ .ProjectName }}_{{ .Version }}_source"
+  name_template: "{{ .ProjectName }}_{{ .Version }}"
 
 checksum:
   name_template: "checksums.txt"
