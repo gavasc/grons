@@ -9,7 +9,7 @@ import (
 
 	"github.com/google/uuid"
 
-	cronpkg "github.com/gavasc/gronma/cron"
+	cronpkg "github.com/gavasc/grons/cron"
 )
 
 // journalEntry represents a single JSON line from journalctl output.

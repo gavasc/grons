@@ -9,8 +9,8 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/google/uuid"
 
-	cronpkg "github.com/gavasc/gronma/cron"
-	"github.com/gavasc/gronma/monitor"
+	cronpkg "github.com/gavasc/grons/cron"
+	"github.com/gavasc/grons/monitor"
 )
 
 // Screen represents which screen is currently shown.

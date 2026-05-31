@@ -2,6 +2,7 @@ package cron
 
 import (
 	"bufio"
+	"errors"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -22,12 +23,13 @@ var namedSchedules = map[string]bool{
 }
 
 // LoadUserCrontab runs crontab -l and parses the output.
-// Returns empty slice if no crontab is installed.
 func LoadUserCrontab() ([]CronEntry, error) {
 	cmd := exec.Command("crontab", "-l")
 	out, err := cmd.Output()
 	if err != nil {
-		// exit status 1 means no crontab for this user — treat as empty
+		if errors.Is(err, exec.ErrNotFound) {
+			return nil, err
+		}
 		return []CronEntry{}, nil
 	}
 	return ParseUserContent(string(out)), nil

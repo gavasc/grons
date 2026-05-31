@@ -3,8 +3,8 @@ package main
 import (
 	"github.com/google/uuid"
 
-	"github.com/gavasc/gronma/monitor"
-	"github.com/gavasc/gronma/ui"
+	"github.com/gavasc/grons/monitor"
+	"github.com/gavasc/grons/ui"
 )
 
 func (m Model) View() string {

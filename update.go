@@ -9,7 +9,7 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/google/uuid"
 
-	cronpkg "github.com/gavasc/gronma/cron"
+	cronpkg "github.com/gavasc/grons/cron"
 )
 
 func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {

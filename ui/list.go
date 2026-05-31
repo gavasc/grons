@@ -6,8 +6,8 @@ import (
 
 	"github.com/charmbracelet/lipgloss"
 
-	cron "github.com/gavasc/gronma/cron"
-	"github.com/gavasc/gronma/monitor"
+	cron "github.com/gavasc/grons/cron"
+	"github.com/gavasc/grons/monitor"
 )
 
 // ListParams contains all data needed to render the list screen.
@@ -121,7 +121,7 @@ func renderPreviewPanel(p ListParams, width, height int) string {
 	}
 
 	e := p.Entries[p.Selected]
-	inner := width - 4 // border + padding
+	inner := width - 2 // border
 
 	var lines []string
 

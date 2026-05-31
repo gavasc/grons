@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strings"
 
-	cron "github.com/gavasc/gronma/cron"
-	"github.com/gavasc/gronma/monitor"
+	cron "github.com/gavasc/grons/cron"
+	"github.com/gavasc/grons/monitor"
 )
 
 // DetailParams contains all data needed to render the detail screen.
@@ -33,7 +33,7 @@ func RenderDetail(p DetailParams) string {
 	lines = append(lines, "")
 
 	// Entry details block
-	inner := p.Width - 4
+	inner := p.Width - 2
 	lines = append(lines, BoldStyle.Render("Command:  ")+truncate(p.Entry.Command, inner-10))
 
 	schedLabel := SectionTitleStyle.Render("Schedule: ")
@@ -66,7 +66,7 @@ func RenderDetail(p DetailParams) string {
 	lines = append(lines, HeaderStyle.Render(
 		fmt.Sprintf("  %-19s  %-6s  %-8s  %s", "Time", "Status", "Duration", "Log"),
 	))
-	lines = append(lines, DimStyle.Render("  "+strings.Repeat("─", min(p.Width-4, 80))))
+	lines = append(lines, DimStyle.Render("  "+strings.Repeat("─", min(p.Width-2, 80))))
 
 	// Show up to 20 records
 	limit := 20

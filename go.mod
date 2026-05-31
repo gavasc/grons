@@ -1,4 +1,4 @@
-module github.com/gavasc/gronma
+module github.com/gavasc/grons
 
 go 1.23.0
 
