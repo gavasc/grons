@@ -10,6 +10,7 @@ import (
 	"github.com/google/uuid"
 
 	cronpkg "github.com/gavasc/grons/cron"
+	"github.com/gavasc/grons/ui"
 )
 
 func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
@@ -35,8 +36,16 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, monitorCmd(m.entries)
 
 	case monitorRefreshMsg:
+		if msg.err != nil {
+			m.detailErr = msg.err.Error()
+		} else if len(msg.records) > 0 {
+			m.detailErr = ""
+		}
 		if len(msg.records) > 0 {
 			m.history.AddAll(msg.records)
+		}
+		if m.screen == ScreenDetail {
+			m.updateDetailContent()
 		}
 		return m, monitorTickCmd()
 
@@ -102,7 +111,7 @@ func (m Model) updateList(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 	case "enter":
 		if len(m.entries) > 0 {
 			m.screen = ScreenDetail
-			// Rebuild viewport content
+			m.updateDetailContent()
 			if m.detail != nil {
 				m.detail.GotoTop()
 			}
@@ -397,4 +406,13 @@ func (m *Model) updateDetailViewport(msg tea.Msg) tea.Cmd {
 	vpModel, cmd := m.detail.Update(msg)
 	m.detail = &vpModel
 	return cmd
+}
+
+// updateDetailContent renders the detail screen and sets it as viewport content.
+func (m *Model) updateDetailContent() {
+	if m.detail == nil {
+		return
+	}
+	content := ui.RenderDetail(m.detailParams())
+	m.detail.SetContent(content)
 }

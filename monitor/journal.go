@@ -2,15 +2,41 @@ package monitor
 
 import (
 	"encoding/json"
+	"fmt"
 	"os/exec"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/google/uuid"
 
 	cronpkg "github.com/gavasc/grons/cron"
 )
+
+var (
+	cronUnit     string
+	cronUnitOnce sync.Once
+)
+
+// cronUnitName detects the systemd cron unit name (cronie, crond, or cron).
+// Result is cached after the first call.
+func cronUnitName() string {
+	cronUnitOnce.Do(func() {
+		for _, name := range []string{"cronie", "crond", "cron"} {
+			out, err := exec.Command("systemctl", "is-active", name).Output()
+			if err != nil {
+				continue
+			}
+			if strings.TrimSpace(string(out)) == "active" {
+				cronUnit = name
+				return
+			}
+		}
+		cronUnit = "crond"
+	})
+	return cronUnit
+}
 
 // journalEntry represents a single JSON line from journalctl output.
 type journalEntry struct {
@@ -31,7 +57,7 @@ type pidRun struct {
 // FetchRunRecords runs journalctl and parses CMD/CMDEND pairs to build RunRecords.
 func FetchRunRecords(entries []cronpkg.CronEntry) ([]RunRecord, error) {
 	cmd := exec.Command(
-		"journalctl", "-u", "crond",
+		"journalctl", "-u", cronUnitName()+".service",
 		"--output=json",
 		"--since", "7 days ago",
 		"--no-pager",
@@ -140,7 +166,35 @@ func FetchRunRecords(entries []cronpkg.CronEntry) ([]RunRecord, error) {
 		completed = append(completed, rec)
 	}
 
+	if len(completed) == 0 {
+		if err := checkCronActive(); err != nil {
+			return nil, err
+		}
+	}
+
 	return completed, nil
+}
+
+// checkCronActive returns an error if the cron daemon is not running.
+func checkCronActive() error {
+	unit := cronUnitName()
+	out, err := exec.Command("systemctl", "is-active", unit).Output()
+	status := strings.TrimSpace(string(out))
+	// systemctl exits non-zero for inactive/not-found, but stdout still has the status.
+	// Only bail if both output AND command failed (e.g. systemctl binary missing).
+	if status == "" && err != nil {
+		return nil
+	}
+	switch status {
+	case "active":
+		return nil
+	case "inactive":
+		return fmt.Errorf("%s is not running — start it with: systemctl start %s", unit, unit)
+	case "not-found":
+		return fmt.Errorf("%s is not installed — run history requires %s.service", unit, unit)
+	default:
+		return nil
+	}
 }
 
 type cmdEndResult struct {

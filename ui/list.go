@@ -12,13 +12,14 @@ import (
 
 // ListParams contains all data needed to render the list screen.
 type ListParams struct {
-	Entries   []cron.CronEntry
-	History   monitor.RunHistory
-	Selected  int
-	Width     int
-	Height    int
-	ErrorMsg  string
-	ShowError bool
+	Entries    []cron.CronEntry
+	History    monitor.RunHistory
+	Selected   int
+	Width      int
+	Height     int
+	ErrorMsg   string
+	ShowError  bool
+	JournalErr string // non-empty when journalctl/crond has an issue
 }
 
 // RenderList renders the two-panel list view.
@@ -152,7 +153,11 @@ func renderPreviewPanel(p ListParams, width, height int) string {
 
 	recent := p.History.Recent(e.ID, 10)
 	if len(recent) == 0 {
-		lines = append(lines, DimStyle.Render("  no runs recorded"))
+		if p.JournalErr != "" {
+			lines = append(lines, DimStyle.Render("  ⚠ "+p.JournalErr))
+		} else {
+			lines = append(lines, DimStyle.Render("  no runs recorded"))
+		}
 	} else {
 		for _, r := range recent {
 			icon := "✓"

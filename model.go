@@ -25,7 +25,10 @@ const (
 // Message types.
 type tickMsg time.Time
 type monitorTickMsg struct{}                              // timer fired — trigger a fetch
-type monitorRefreshMsg struct{ records []monitor.RunRecord } // actual fetched data
+type monitorRefreshMsg struct {
+	records []monitor.RunRecord
+	err     error
+}
 type entriesLoadedMsg struct{ entries []cronpkg.CronEntry }
 type errMsg struct{ err error }
 type savedMsg struct{}
@@ -54,6 +57,7 @@ type Model struct {
 	editor   EditorState
 	errorMsg string
 	errorExp time.Time
+	detailErr string
 }
 
 func newModel() Model {
@@ -124,8 +128,8 @@ func saveCmd(entries []cronpkg.CronEntry) tea.Cmd {
 // monitorCmd fetches run records from journalctl.
 func monitorCmd(entries []cronpkg.CronEntry) tea.Cmd {
 	return func() tea.Msg {
-		records, _ := monitor.FetchRunRecords(entries)
-		return monitorRefreshMsg{records: records}
+		records, err := monitor.FetchRunRecords(entries)
+		return monitorRefreshMsg{records: records, err: err}
 	}
 }
 

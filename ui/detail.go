@@ -14,6 +14,7 @@ type DetailParams struct {
 	Records []monitor.RunRecord // all records, most recent first
 	Width   int
 	Height  int
+	ErrMsg  string // non-empty when journalctl/crond has an issue
 }
 
 // RenderDetail renders the detail view for a single cron entry.
@@ -75,7 +76,11 @@ func RenderDetail(p DetailParams) string {
 	}
 
 	if limit == 0 {
-		lines = append(lines, DimStyle.Render("  no runs recorded"))
+		if p.ErrMsg != "" {
+			lines = append(lines, DimStyle.Render("  ⚠ "+p.ErrMsg))
+		} else {
+			lines = append(lines, DimStyle.Render("  no runs recorded"))
+		}
 	} else {
 		for i := 0; i < limit; i++ {
 			r := p.Records[i]

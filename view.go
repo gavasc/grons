@@ -1,8 +1,6 @@
 package main
 
 import (
-	"github.com/google/uuid"
-
 	"github.com/gavasc/grons/monitor"
 	"github.com/gavasc/grons/ui"
 )
@@ -12,6 +10,9 @@ func (m Model) View() string {
 	case ScreenList:
 		return ui.RenderList(m.listParams())
 	case ScreenDetail:
+		if m.detail != nil {
+			return m.detail.View()
+		}
 		return ui.RenderDetail(m.detailParams())
 	case ScreenEditor:
 		return ui.RenderEditor(m.editorParams())
@@ -21,20 +22,18 @@ func (m Model) View() string {
 
 func (m Model) listParams() ui.ListParams {
 	return ui.ListParams{
-		Entries:   m.entries,
-		History:   m.history,
-		Selected:  m.selected,
-		Width:     m.width,
-		Height:    m.height,
-		ErrorMsg:  m.errorMsg,
-		ShowError: m.errorMsg != "" && m.errorExp.After(timeNow()),
+		Entries:    m.entries,
+		History:    m.history,
+		Selected:   m.selected,
+		Width:      m.width,
+		Height:     m.height,
+		ErrorMsg:   m.errorMsg,
+		ShowError:  m.errorMsg != "" && m.errorExp.After(timeNow()),
+		JournalErr: m.detailErr,
 	}
 }
 
 func (m Model) detailParams() ui.DetailParams {
-	var entry interface{ ID() uuid.UUID }
-	_ = entry
-
 	if m.selected < 0 || m.selected >= len(m.entries) {
 		return ui.DetailParams{
 			Width:  m.width,
@@ -50,6 +49,7 @@ func (m Model) detailParams() ui.DetailParams {
 		Records: ensureRunRecords(records),
 		Width:   m.width,
 		Height:  m.height,
+		ErrMsg:  m.detailErr,
 	}
 }
 
